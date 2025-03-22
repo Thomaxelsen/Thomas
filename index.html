@@ -6,7 +6,7 @@
     <title>Kreftforeningens flertallskalkulator for Stortinget</title>
     <style>
         :root {
-            --primary-color: #e6007e;
+            --primary-color: #003087;
             --secondary-color: #c8102e;
             --success-color: #28a745;
             --fail-color: #dc3545;
@@ -92,7 +92,7 @@
         
         .party-card.selected {
             border-color: var(--primary-color);
-            background-color: rgba(230, 0, 126, 0.05);
+            background-color: rgba(0, 48, 135, 0.05);
         }
         
         .party-icon {
@@ -174,7 +174,7 @@
         }
         
         .votes-for {
-            background-color: rgba(230, 0, 126, 0.1);
+            background-color: rgba(0, 48, 135, 0.1);
             color: var(--primary-color);
         }
         
@@ -294,7 +294,7 @@
         }
         
         .btn-primary:hover {
-            background-color: #c5006b;
+            background-color: #002066;
         }
         
         .btn-secondary:hover {
@@ -328,7 +328,7 @@
             flex-direction: column;
             align-items: center;
             padding: 20px;
-            background-color: #f9f9fa;
+            background-color: #f9f9f9;
             border: 1px solid #ddd;
             border-radius: 50% 50% 0 0;
             overflow: hidden;
@@ -448,13 +448,11 @@
     <div class="container">
         <header>
             <div class="header-image">
-                <!-- Kreftforeningen colorful logo -->
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                    <circle cx="30" cy="30" r="18" fill="#e6007e" />
-                    <circle cx="70" cy="30" r="18" fill="#00B0B9" />
-                    <circle cx="30" cy="70" r="18" fill="#FF9E1B" />
-                    <circle cx="70" cy="70" r="18" fill="#84BD00" />
-                    <circle cx="50" cy="50" r="18" fill="#662483" />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="#003087">
+                    <path d="M50 5C25.1 5 5 25.1 5 50s20.1 45 45 45 45-20.1 45-45S74.9 5 50 5zm0 85c-22.1 0-40-17.9-40-40s17.9-40 40-40 40 17.9 40 40-17.9 40-40 40z"/>
+                    <path d="M65 35H35v30h30V35zm-5 25H40V40h20v20z"/>
+                    <rect x="45" y="25" width="10" height="50"/>
+                    <rect x="25" y="45" width="50" height="10"/>
                 </svg>
             </div>
             <h1>Kreftforeningens flertallskalkulator for Stortinget</h1>
@@ -799,4 +797,45 @@
                 const legendText = document.createElement('span');
                 legendText.textContent = `${party.name} (${party.seats})`;
                 
-                legen
+                legendItem.appendChild(legendColor);
+                legendItem.appendChild(legendText);
+                parliamentLegend.appendChild(legendItem);
+            });
+            
+            // Validate seat counts
+            const seatCounts = {};
+            document.querySelectorAll('.seat').forEach(seat => {
+                const party = seat.dataset.party;
+                seatCounts[party] = (seatCounts[party] || 0) + 1;
+            });
+            
+            sortedParties.forEach(party => {
+                const count = seatCounts[party.shorthand] || 0;
+                if (count !== party.seats) {
+                    console.error(`Party ${party.name} has ${count} seats in visualization, expected ${party.seats}`);
+                }
+            });
+        }
+
+        // Update visualization based on party selection
+        function updateVisualization() {
+            const selectedParties = Array.from(document.querySelectorAll('.party-card.selected'));
+            const selectedPartyShorthands = selectedParties.map(party => party.dataset.shorthand);
+            
+            // Update seat styling
+            document.querySelectorAll('.seat').forEach(seat => {
+                if (selectedPartyShorthands.includes(seat.dataset.party)) {
+                    seat.classList.add('active');
+                } else {
+                    seat.classList.remove('active');
+                }
+            });
+        }
+
+        // Initialize
+        createParliamentVisualization();
+        updateResults();
+        updateVisualization();
+    </script>
+</body>
+</html>
