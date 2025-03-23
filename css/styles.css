@@ -4,7 +4,7 @@
     --success-color: #28a745;
     --fail-color: #dc3545;
     --neutral-color: #6c757d;
-    --light-bg: #f8f9fa;
+    --light-bg: #f8f9fb;
     --border-color: #dee2e6;
 }
 
@@ -12,7 +12,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
 body {
@@ -22,43 +22,74 @@ body {
 }
 
 .container {
-    max-width: 1000px;
+    max-width: 1100px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 1.5rem;
 }
 
+/* Header styles */
 header {
     display: flex;
     align-items: center;
-    margin-bottom: 30px;
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: 15px;
+    padding: 1.5rem 0;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
 }
 
 .header-image {
-    width: 60px;
-    margin-right: 20px;
+    width: 70px;
+    height: 70px;
+    margin-right: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.header-image:hover {
+    transform: scale(1.05);
 }
 
 header h1 {
     color: var(--primary-color);
-    font-size: 28px;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.2;
 }
 
+.header-subtitle {
+    color: #555;
+    font-size: 1rem;
+    margin-top: 0.3rem;
+}
+
+/* Description styles */
 .description {
-    margin-bottom: 25px;
-    padding: 15px;
+    margin-bottom: 2rem;
+    padding: 1.2rem 1.5rem;
     background-color: white;
-    border-radius: 6px;
+    border-radius: 8px;
     border-left: 5px solid var(--primary-color);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.description:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
 }
 
 .info-text {
-    font-size: 15px;
-    color: #555;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.5rem;
 }
 
+.highlight {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* Party grid styles */
 .party-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -68,8 +99,8 @@ header h1 {
 
 .party-card {
     background: white;
-    border-radius: 6px;
-    padding: 10px;
+    border-radius: 8px;
+    padding: 12px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     transition: transform 0.2s, box-shadow 0.2s;
     cursor: pointer;
@@ -103,7 +134,7 @@ header h1 {
 
 .party-name {
     flex-grow: 1;
-    font-size: 0.9em;
+    font-size: 0.95em;
 }
 
 .party-seats {
@@ -112,11 +143,12 @@ header h1 {
     margin-left: 5px;
 }
 
+/* Result container styles */
 .result-container {
     background-color: white;
     padding: 20px;
-    border-radius: 6px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     margin-bottom: 25px;
 }
 
@@ -124,6 +156,7 @@ header h1 {
     color: var(--primary-color);
     margin-bottom: 15px;
     font-size: 22px;
+    font-weight: 600;
 }
 
 .result-details {
@@ -261,6 +294,7 @@ header h1 {
 .icon-mdg { background-color: #439539; }
 .icon-pf { background-color: #a04d94; }
 
+/* Action buttons */
 .action-buttons {
     margin: 25px 0;
     display: flex;
@@ -268,12 +302,13 @@ header h1 {
 }
 
 button {
-    padding: 10px 15px;
+    padding: 0.7rem 1.5rem;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .btn-primary {
@@ -288,12 +323,17 @@ button {
 
 .btn-primary:hover {
     background-color: #002066;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 .btn-secondary:hover {
     background-color: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
+/* Footer */
 footer {
     margin-top: 30px;
     border-top: 1px solid var(--border-color);
@@ -315,6 +355,27 @@ footer {
     margin: 0 auto;
     position: relative;
     overflow: visible;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin: 2rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #eee;
+    position: relative;
+    text-align: center;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background-color: var(--primary-color);
 }
 
 .parliament-seats {
@@ -372,15 +433,6 @@ footer {
     height: 15px;
     border-radius: 50%;
     margin-right: 5px;
-}
-
-.section-title {
-    font-size: 22px;
-    color: var(--primary-color);
-    margin: 30px 0 15px;
-    text-align: center;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 10px;
 }
 
 /* Two column layout */
