@@ -43,10 +43,11 @@ function initializeApp() {
   // Create party cards
   createPartyCards();
   
-  // Initialize visualization and results
-  createParliamentVisualization();
+  // Initialize D3 visualization 
+  createD3ParliamentVisualization(parties, []);
+  
+  // Initialize results
   updateResults();
-  updateVisualization();
   
   // Set up event listeners
   setupEventListeners();
@@ -162,163 +163,11 @@ function setupEventListeners() {
             }
         }
 
-        // Create parliament visualization
-        function createParliamentVisualization() {
-            // Clear previous seats
-            parliamentSeats.innerHTML = '';
-            
-            // Sort parties from left to right based on political position
-            const sortedParties = [...parties].sort((a, b) => a.position - b.position);
-            
-            // Total seats counter to verify
-            let totalCreatedSeats = 0;
-            
-            // Create a hemicycle visualization with multiple rows
-            const rowCount = 8; // Number of rows in the parliament
-            const rows = [];
-            
-            // Initialize empty rows
-            for (let i = 0; i < rowCount; i++) {
-                const row = document.createElement('div');
-                row.className = 'parliament-row';
-                // Make the rows curve by adjusting width - outer rows are wider
-                const rowWidth = 50 + Math.sin(Math.PI * (i / (rowCount - 1))) * 45;
-                row.style.width = `${rowWidth}%`;
-                rows.push(row);
-                parliamentSeats.appendChild(row);
-            }
-            
-            // Simplified approach: Divide the rows into left-to-right "columns"
-            // For each party, get their proportional number of seats
-            // Create party blocks in each row
-            
-            // We'll distribute parties from left to right in each row
-            
-            // Calculate number of "slots" per row
-            // Each party will get a number of slots proportional to its size
-            const slotsPerRow = [];
-            for (let i = 0; i < rowCount; i++) {
-                // Calculate based on row width
-                const rowWidth = 50 + Math.sin(Math.PI * (i / (rowCount - 1))) * 45;
-                const slots = Math.floor(TOTAL_SEATS * (rowWidth / 95) / rowCount * 1.2);
-                slotsPerRow.push(slots);
-            }
-            
-            // Calculate total number of slots
-            const totalSlots = slotsPerRow.reduce((a, b) => a + b, 0);
-            
-            // Calculate seats per party per row - must sum to their actual seats
-            const partyRowAllocation = {};
-            
-            // Initialize allocation
-            sortedParties.forEach(party => {
-                partyRowAllocation[party.shorthand] = Array(rowCount).fill(0);
-            });
-            
-            // Allocate seats for each party
-            sortedParties.forEach(party => {
-                let seatsRemaining = party.seats;
-                
-                // Calculate ideal distribution across rows
-                const idealSeatsPerRow = rows.map((_, rowIndex) => {
-                    const proportion = slotsPerRow[rowIndex] / totalSlots;
-                    return Math.round(party.seats * proportion);
-                });
-                
-                // Adjust to ensure totals match
-                for (let rowIndex = 0; rowIndex < rowCount && seatsRemaining > 0; rowIndex++) {
-                    const idealSeats = idealSeatsPerRow[rowIndex];
-                    partyRowAllocation[party.shorthand][rowIndex] = Math.min(idealSeats, seatsRemaining);
-                    seatsRemaining -= partyRowAllocation[party.shorthand][rowIndex];
-                }
-                
-                // If we still have seats to assign, add them to rows from the front
-                for (let rowIndex = rowCount - 1; rowIndex >= 0 && seatsRemaining > 0; rowIndex--) {
-                    partyRowAllocation[party.shorthand][rowIndex]++;
-                    seatsRemaining--;
-                }
-            });
-            
-            // Verify each party has the correct number of seats allocated
-            sortedParties.forEach(party => {
-                const totalAllocated = partyRowAllocation[party.shorthand].reduce((a, b) => a + b, 0);
-                if (totalAllocated !== party.seats) {
-                    console.error(`Party ${party.name} allocated ${totalAllocated} seats, expected ${party.seats}`);
-                }
-            });
-            
-            // Create seats for each row
-            let seatIndex = 0;
-            
-            for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                const row = rows[rowIndex];
-                
-                // Process each party in order from left to right
-                for (let partyIndex = 0; partyIndex < sortedParties.length; partyIndex++) {
-                    const party = sortedParties[partyIndex];
-                    const seatsForPartyInRow = partyRowAllocation[party.shorthand][rowIndex];
-                    
-                    // Add seats for this party in this row
-                    for (let i = 0; i < seatsForPartyInRow; i++) {
-                        const seat = document.createElement('div');
-                        seat.className = 'seat';
-                        seat.style.backgroundColor = party.color;
-                        seat.dataset.party = party.shorthand;
-                        seat.dataset.index = seatIndex++;
-                        row.appendChild(seat);
-                        totalCreatedSeats++;
-                    }
-                }
-            }
-            
-            console.log(`Created ${totalCreatedSeats} total seats, expected ${TOTAL_SEATS}`);
-            
-            // Create legend
-            parliamentLegend.innerHTML = '';
-            sortedParties.forEach(party => {
-                const legendItem = document.createElement('div');
-                legendItem.className = 'legend-item';
-                
-                const legendColor = document.createElement('div');
-                legendColor.className = 'legend-color';
-                legendColor.style.backgroundColor = party.color;
-                
-                const legendText = document.createElement('span');
-                legendText.textContent = `${party.name} (${party.seats})`;
-                
-                legendItem.appendChild(legendColor);
-                legendItem.appendChild(legendText);
-                parliamentLegend.appendChild(legendItem);
-            });
-            
-            // Validate seat counts
-            const seatCounts = {};
-            document.querySelectorAll('.seat').forEach(seat => {
-                const party = seat.dataset.party;
-                seatCounts[party] = (seatCounts[party] || 0) + 1;
-            });
-            
-            sortedParties.forEach(party => {
-                const count = seatCounts[party.shorthand] || 0;
-                if (count !== party.seats) {
-                    console.error(`Party ${party.name} has ${count} seats in visualization, expected ${party.seats}`);
-                }
-            });
-        }
-
-        // Update visualization based on party selection
-        function updateVisualization() {
-            const selectedParties = Array.from(document.querySelectorAll('.party-card.selected'));
-            const selectedPartyShorthands = selectedParties.map(party => party.dataset.shorthand);
-            
-            // Update seat styling
-            document.querySelectorAll('.seat').forEach(seat => {
-                if (selectedPartyShorthands.includes(seat.dataset.party)) {
-                    seat.classList.add('active');
-                } else {
-                    seat.classList.remove('active');
-                }
-            });
-        }
-
-
+// Update visualization based on party selection
+function updateVisualization() {
+    const selectedParties = Array.from(document.querySelectorAll('.party-card.selected'));
+    const selectedPartyShorthands = selectedParties.map(party => party.dataset.shorthand);
+    
+    // Update D3 visualization
+    updateD3Visualization(selectedPartyShorthands);
+}
