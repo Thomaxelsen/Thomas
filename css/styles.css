@@ -573,7 +573,24 @@ footer {
 /* Responsive design */
 @media (max-width: 768px) {
     .party-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+        gap: 10px;
+    }
+    
+    .party-card {
+        padding: 12px;
+    }
+    
+    .party-name {
+        font-size: 0.95rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    .party-seats {
+        min-width: 32px;
+        text-align: center;
     }
     
     .result-details {
