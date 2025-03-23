@@ -1,17 +1,87 @@
  <script>
         // Party data with colors and shorthand, sorted by political position (left to right)
-        const parties = [
-            { name: "Rødt", seats: 8, shorthand: "R", color: "#da291c", classPrefix: "r", position: 1 },
-            { name: "Sosialistisk Venstreparti", seats: 13, shorthand: "SV", color: "#eb2e2d", classPrefix: "sv", position: 2 },
-            { name: "Arbeiderpartiet", seats: 48, shorthand: "AP", color: "#ed1b34", classPrefix: "ap", position: 3 },
-            { name: "Miljøpartiet De Grønne", seats: 3, shorthand: "MDG", color: "#439539", classPrefix: "mdg", position: 4 },
-            { name: "Senterpartiet", seats: 28, shorthand: "SP", color: "#14773c", classPrefix: "sp", position: 5 },
-            { name: "Venstre", seats: 8, shorthand: "V", color: "#00807b", classPrefix: "v", position: 6 },
-            { name: "Kristelig Folkeparti", seats: 3, shorthand: "KrF", color: "#ffbe00", classPrefix: "krf", position: 7 },
-            { name: "Høyre", seats: 36, shorthand: "H", color: "#007ac8", classPrefix: "h", position: 8 },
-            { name: "Fremskrittspartiet", seats: 21, shorthand: "FrP", color: "#002e5e", classPrefix: "frp", position: 9 },
-            { name: "Pasientfokus", seats: 1, shorthand: "PF", color: "#a04d94", classPrefix: "pf", position: 10 }
-        ];
+        // Globale variabler
+let parties = [];
+const TOTAL_SEATS = 169;
+const MAJORITY_THRESHOLD = 85;
+
+// DOM elementer - disse vil bli initialisert når dokumentet er lastet
+let partyGrid;
+let progressBar;
+let votesForLabel;
+let votesAgainstLabel;
+let totalVotesFor;
+let totalVotesAgainst;
+let majorityStatus;
+let selectedPartyTags;
+let selectAllBtn;
+let clearAllBtn;
+let parliamentSeats;
+let parliamentLegend;
+
+// Denne funksjonen kjøres når dokumentet er ferdig lastet
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialiser DOM-elementer
+    partyGrid = document.getElementById('partyGrid');
+    progressBar = document.getElementById('progressBar');
+    votesForLabel = document.getElementById('votesFor');
+    votesAgainstLabel = document.getElementById('votesAgainst');
+    totalVotesFor = document.getElementById('totalVotesFor');
+    totalVotesAgainst = document.getElementById('totalVotesAgainst');
+    majorityStatus = document.getElementById('majorityStatus');
+    selectedPartyTags = document.getElementById('selectedPartyTags');
+    selectAllBtn = document.getElementById('selectAllBtn');
+    clearAllBtn = document.getElementById('clearAllBtn');
+    parliamentSeats = document.getElementById('parliamentSeats');
+    parliamentLegend = document.getElementById('parliamentLegend');
+    
+    // Last inn partidata og initialiser kalkulatoren
+    fetchPartyData();
+    
+    // Legg til event listeners
+    selectAllBtn.addEventListener('click', selectAllParties);
+    clearAllBtn.addEventListener('click', clearAllParties);
+});
+
+// Funksjoner for å velge/fjerne alle partier
+function selectAllParties() {
+    document.querySelectorAll('.party-card').forEach(card => {
+        card.classList.add('selected');
+    });
+    updateResults();
+    updateVisualization();
+}
+
+function clearAllParties() {
+    document.querySelectorAll('.party-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    updateResults();
+    updateVisualization();
+}
+
+// Hent partidata fra JSON-filen
+function fetchPartyData() {
+    fetch('./data/parties.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Kunne ikke laste inn partidata');
+            }
+            return response.json();
+        })
+        .then(data => {
+            parties = data;
+            createPartyCards();
+            createParliamentVisualization();
+            updateResults();
+            updateVisualization();
+        })
+        .catch(error => {
+            console.error('Feil ved lasting av partidata:', error);
+            // Vis feilmelding til brukeren
+            partyGrid.innerHTML = '<p>Kunne ikke laste inn partidata. Vennligst prøv igjen senere.</p>';
+        });
+}
 
         // Required votes for majority
         const TOTAL_SEATS = 169;
@@ -31,42 +101,43 @@
         const parliamentSeats = document.getElementById('parliamentSeats');
         const parliamentLegend = document.getElementById('parliamentLegend');
 
-        // Create party cards
-        parties.forEach(party => {
-            const partyCard = document.createElement('div');
-            partyCard.className = 'party-card';
-            partyCard.dataset.seats = party.seats;
-            partyCard.dataset.name = party.name;
-            partyCard.dataset.shorthand = party.shorthand;
-            partyCard.dataset.classPrefix = party.classPrefix;
-            
-            const partyIcon = document.createElement('span');
-            partyIcon.className = `party-icon icon-${party.classPrefix}`;
-            partyIcon.textContent = party.shorthand.charAt(0);
-            
-            const partyName = document.createElement('span');
-            partyName.className = 'party-name';
-            partyName.textContent = party.name;
-            
-            const partySeats = document.createElement('span');
-            partySeats.className = 'party-seats';
-            partySeats.textContent = party.seats;
-            
-            partyCard.appendChild(partyIcon);
-            partyCard.appendChild(partyName);
-            partyCard.appendChild(partySeats);
-            
-            partyCard.addEventListener('click', () => toggleParty(partyCard));
-            
-            partyGrid.appendChild(partyCard);
-        });
+        // Opprett parti-kort
+function createPartyCards() {
+    parties.forEach(party => {
+        const partyCard = document.createElement('div');
+        partyCard.className = 'party-card';
+        partyCard.dataset.seats = party.seats;
+        partyCard.dataset.name = party.name;
+        partyCard.dataset.shorthand = party.shorthand;
+        partyCard.dataset.classPrefix = party.classPrefix;
+        
+        const partyIcon = document.createElement('span');
+        partyIcon.className = `party-icon icon-${party.classPrefix}`;
+        partyIcon.textContent = party.shorthand.charAt(0);
+        
+        const partyName = document.createElement('span');
+        partyName.className = 'party-name';
+        partyName.textContent = party.name;
+        
+        const partySeats = document.createElement('span');
+        partySeats.className = 'party-seats';
+        partySeats.textContent = party.seats;
+        
+        partyCard.appendChild(partyIcon);
+        partyCard.appendChild(partyName);
+        partyCard.appendChild(partySeats);
+        
+        partyCard.addEventListener('click', () => toggleParty(partyCard));
+        
+        partyGrid.appendChild(partyCard);
+    });
 
-        // Toggle party selection
-        function toggleParty(partyCard) {
-            partyCard.classList.toggle('selected');
-            updateResults();
-            updateVisualization();
-        }
+      // Toggle party selection
+function toggleParty(partyCard) {
+    partyCard.classList.toggle('selected');
+    updateResults();
+    updateVisualization();
+}
 
         // Select all parties
         selectAllBtn.addEventListener('click', () => {
@@ -295,8 +366,5 @@
             });
         }
 
-        // Initialize
-        createParliamentVisualization();
-        updateResults();
-        updateVisualization();
+ 
     </script>
