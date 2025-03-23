@@ -18,16 +18,18 @@ function createD3ParliamentVisualization(parties, selectedParties) {
         visualizationData.partyData[party.shorthand] = party;
     });
     
-    // Set up dimensions
-    const width = 600;
-    const height = 350;
+    // Set up dimensions - mindre størrelse for å passe i containeren
+    const width = 400;  // Redusert fra 600
+    const height = 220; // Redusert fra 350
     const radius = Math.min(width, height * 1.8) / 2;
     
-    // Create SVG container
+    // Create SVG container with responsive scaling
     const svg = d3.select("#d3-parliament")
         .append("svg")
-        .attr("width", width)
-        .attr("height", height)
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .attr("width", "100%")
+        .attr("height", "100%")
         .append("g")
         .attr("transform", `translate(${width / 2}, ${height})`);
     
@@ -40,8 +42,8 @@ function createD3ParliamentVisualization(parties, selectedParties) {
     visualizationData.allSeats = [];
     
     // Calculate positions for each seat in a hemicycle
-    const seatRadius = 7;
-    const rows = 9;
+    const seatRadius = 5; // Redusert størrelse på setene
+    const rows = 8;       // Færre rader
     
     // First, calculate total seats per row and positions without assigning parties
     let seatPositions = [];
@@ -57,11 +59,11 @@ function createD3ParliamentVisualization(parties, selectedParties) {
         // Distribute seats more evenly among rows
         let seatsInRow;
         if (row < 3) {
-            seatsInRow = Math.min(maxSeatInRow, Math.ceil(TOTAL_SEATS / (rows * 1.5)));
+            seatsInRow = Math.min(maxSeatInRow, Math.ceil(169 / (rows * 1.5)));
         } else if (row < 6) {
-            seatsInRow = Math.min(maxSeatInRow, Math.ceil(TOTAL_SEATS / rows));
+            seatsInRow = Math.min(maxSeatInRow, Math.ceil(169 / rows));
         } else {
-            seatsInRow = Math.min(maxSeatInRow, Math.ceil(TOTAL_SEATS / (rows * 0.7)));
+            seatsInRow = Math.min(maxSeatInRow, Math.ceil(169 / (rows * 0.7)));
         }
         
         // Calculate angle between seats
@@ -82,8 +84,8 @@ function createD3ParliamentVisualization(parties, selectedParties) {
     }
     
     // Ensure we don't have more positions than seats
-    if (seatPositions.length > TOTAL_SEATS) {
-        seatPositions = seatPositions.slice(0, TOTAL_SEATS);
+    if (seatPositions.length > 169) {
+        seatPositions = seatPositions.slice(0, 169);
     }
     
     // Now assign parties to positions in left-to-right order
@@ -107,6 +109,9 @@ function createD3ParliamentVisualization(parties, selectedParties) {
         }
     });
     
+    // Oppdater også legenden med partier
+    updateLegend(parties);
+    
     // Render all seats
     renderSeats(selectedParties);
 }
@@ -118,7 +123,7 @@ function renderSeats(selectedParties) {
     // Remove existing seats
     visualizationData.svg.selectAll(".seat").remove();
     
-    const seatRadius = 7;
+    const seatRadius = 5; // Justert radius
     
     // Create seats
     visualizationData.allSeats.forEach(seat => {
@@ -144,7 +149,7 @@ function renderSeats(selectedParties) {
                     .attr("x", seat.x)
                     .attr("y", seat.y - 15)
                     .attr("text-anchor", "middle")
-                    .attr("font-size", "12px")
+                    .attr("font-size", "10px")
                     .attr("fill", "#333")
                     .attr("stroke", "#fff")
                     .attr("stroke-width", 0.5)
@@ -155,6 +160,29 @@ function renderSeats(selectedParties) {
                 d3.select(this).attr("r", seatRadius);
                 d3.select("#tooltip").remove();
             });
+    });
+}
+
+// Update the legend with current party data
+function updateLegend(parties) {
+    // Clear existing legend
+    document.getElementById('parliamentLegend').innerHTML = '';
+    
+    // Create new legend items
+    parties.forEach(party => {
+        const legendItem = document.createElement('div');
+        legendItem.className = 'legend-item';
+        
+        const legendColor = document.createElement('div');
+        legendColor.className = 'legend-color';
+        legendColor.style.backgroundColor = party.color;
+        
+        const legendText = document.createElement('span');
+        legendText.textContent = `${party.name} (${party.seats})`;
+        
+        legendItem.appendChild(legendColor);
+        legendItem.appendChild(legendText);
+        document.getElementById('parliamentLegend').appendChild(legendItem);
     });
 }
 
