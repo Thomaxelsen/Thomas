@@ -36,11 +36,10 @@
             padding-bottom: 15px;
         }
         
-       .header-image {
-    width: 180px;
-    margin-right: 20px;
-    overflow: visible; /* Sikrer at SVG ikke kuttes */
-}
+        .header-image {
+            width: 60px;
+            margin-right: 20px;
+        }
         
         header h1 {
             color: var(--primary-color);
