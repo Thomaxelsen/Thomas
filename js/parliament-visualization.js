@@ -10,7 +10,7 @@ let visualizationData = {
 
 // This function will be called from the main script
 function createD3ParliamentVisualization(parties, selectedParties) {
-    // Clear any existing visualization
+    // Clear any existing visualization completely
     d3.select("#d3-parliament").html("");
     
     // Store party data for later reference
@@ -129,8 +129,8 @@ function createD3ParliamentVisualization(parties, selectedParties) {
 function renderSeats(selectedParties) {
     if (!visualizationData.svg) return;
     
-    // Remove existing seats
-    visualizationData.svg.selectAll(".seat").remove();
+    // Remove all existing elements, not just seats
+    visualizationData.svg.selectAll("*").remove();
     
     const seatRadius = 6;
     
@@ -144,7 +144,6 @@ function renderSeats(selectedParties) {
             .attr("r", seatRadius)
             .attr("fill", seat.color)
             .attr("class", "seat")
-            .attr("id", `seat-${seat.index}`)
             .attr("data-party", seat.party)
             .attr("stroke", "#fff")
             .attr("stroke-width", 0.5)
@@ -200,6 +199,6 @@ function updateLegend(parties) {
 
 // This will be called to update the visualization when selection changes
 function updateD3Visualization(selectedParties) {
-    // Simply re-render all seats with new selection
+    // Re-render all seats with new selection
     renderSeats(selectedParties);
 }
