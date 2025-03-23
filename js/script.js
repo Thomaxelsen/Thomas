@@ -1,4 +1,3 @@
-       // Party data with colors and shorthand, sorted by political position (left to right)
         const parties = [
             { name: "Rødt", seats: 8, shorthand: "R", color: "#da291c", classPrefix: "r", position: 1 },
             { name: "Sosialistisk Venstreparti", seats: 13, shorthand: "SV", color: "#eb2e2d", classPrefix: "sv", position: 2 },
