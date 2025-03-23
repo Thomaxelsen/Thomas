@@ -36,28 +36,6 @@ function createD3ParliamentVisualization(parties, selectedParties) {
     
     visualizationData.svg = svg;
     
-    // Draw majority threshold line
-    const thresholdRadius = radius * 0.4;
-    svg.append("path")
-        .attr("d", d3.arc()({
-            innerRadius: thresholdRadius,
-            outerRadius: thresholdRadius,
-            startAngle: -Math.PI,
-            endAngle: 0
-        }))
-        .attr("stroke", "#aaa")
-        .attr("stroke-width", 1.5)
-        .attr("stroke-dasharray", "5,5")
-        .attr("fill", "none");
-    
-    svg.append("text")
-        .attr("x", 0)
-        .attr("y", -thresholdRadius - 5)
-        .attr("text-anchor", "middle")
-        .attr("font-size", "10px")
-        .attr("fill", "#666")
-        .text("Flertallsgrense (85)");
-    
     // Sort parties by political position (left to right)
     const sortedParties = [...parties].sort((a, b) => a.position - b.position);
     
@@ -155,37 +133,21 @@ function renderSeats(selectedParties) {
     visualizationData.svg.selectAll(".seat").remove();
     
     const seatRadius = 6;
-    let selectedCount = 0;
-    
-    // Count selected seats for majority visualization
-    if (selectedParties.length > 0) {
-        selectedCount = visualizationData.allSeats.filter(seat => 
-            selectedParties.includes(seat.party)
-        ).length;
-    }
-    
-    const hasMajority = selectedCount >= 85;
     
     // Create seats
     visualizationData.allSeats.forEach(seat => {
         const isSelected = selectedParties.includes(seat.party);
         
-        // Check if this seat contributes to crossing the majority threshold
-        const isMajoritySeat = isSelected && 
-                              seat.index >= 84 && 
-                              seat.index < 85 && 
-                              hasMajority;
-        
         visualizationData.svg.append("circle")
             .attr("cx", seat.x)
             .attr("cy", seat.y)
-            .attr("r", isMajoritySeat ? seatRadius * 1.5 : seatRadius)
+            .attr("r", seatRadius)
             .attr("fill", seat.color)
             .attr("class", "seat")
             .attr("id", `seat-${seat.index}`)
             .attr("data-party", seat.party)
-            .attr("stroke", isMajoritySeat ? "#ffcc00" : "#fff")
-            .attr("stroke-width", isMajoritySeat ? 2 : 0.5)
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 0.5)
             .style("opacity", isSelected ? 1 : 0.3)
             .style("cursor", "pointer")
             .on("mouseover", function() {
@@ -201,24 +163,12 @@ function renderSeats(selectedParties) {
                     .attr("stroke", "#fff")
                     .attr("stroke-width", 0.5)
                     .attr("paint-order", "stroke")
-                    .text(`${seat.name} (${seat.index + 1})`);
+                    .text(seat.name);
             })
             .on("mouseout", function() {
-                d3.select(this).attr("r", isMajoritySeat ? seatRadius * 1.5 : seatRadius);
+                d3.select(this).attr("r", seatRadius);
                 d3.select("#tooltip").remove();
             });
-        
-        // Add a special indicator for the majority-making seat
-        if (isMajoritySeat) {
-            visualizationData.svg.append("text")
-                .attr("x", seat.x)
-                .attr("y", seat.y - 15)
-                .attr("text-anchor", "middle")
-                .attr("font-size", "10px")
-                .attr("fill", "#333")
-                .attr("font-weight", "bold")
-                .text("Flertall!");
-        }
     });
 }
 
