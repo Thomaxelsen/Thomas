@@ -60,7 +60,7 @@ function clearAllParties() {
 
 // Hent partidata fra JSON-filen
 function fetchPartyData() {
-    fetch('data/parties.json')  // Merk: fjernet punktet foran 'data'
+    fetch('/Thomas/data/parties.json')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Kunne ikke laste inn partidata');
