@@ -256,15 +256,15 @@ header h1 strong {
 }
 
 .votes-for {
-    background-color: rgba(230, 60, 140, 0.1);
-    color: var(--kf-pink);
-    border: 1px solid rgba(230, 60, 140, 0.2);
+    background-color: rgba(142, 206, 63, 0.1); /* Endret fra pink til light-green */
+    color: var(--kf-green);
+    border: 1px solid rgba(0, 168, 163, 0.2);
 }
 
 .votes-against {
-    background-color: rgba(0, 168, 163, 0.1);
-    color: var(--kf-green);
-    border: 1px solid rgba(0, 168, 163, 0.2);
+    background-color: rgba(230, 60, 140, 0.1); /* Endret fra green til pink */
+    color: var(--kf-pink);
+    border: 1px solid rgba(230, 60, 140, 0.2);
 }
 
 .has-majority {
