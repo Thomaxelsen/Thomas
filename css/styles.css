@@ -70,18 +70,6 @@ header {
     left: 0;
 }
 
-.logo-petals path {
-    fill: var(--kf-pink);
-}
-
-.logo-petals path:nth-child(1) { fill: var(--kf-blue); }
-.logo-petals path:nth-child(2) { fill: var(--kf-purple); }
-.logo-petals path:nth-child(3) { fill: var(--kf-pink); }
-.logo-petals path:nth-child(4) { fill: var(--kf-orange); }
-.logo-petals path:nth-child(5) { fill: var(--kf-yellow); }
-.logo-petals path:nth-child(6) { fill: var(--kf-light-green); }
-.logo-petals path:nth-child(7) { fill: var(--kf-green); }
-
 .header-text {
     flex: 1;
 }
@@ -264,12 +252,12 @@ header h1 {
 }
 
 .has-majority {
-    background-color: var(--kf-pink);
+    background: linear-gradient(90deg, var(--kf-light-green), var(--kf-green));
     color: white;
 }
 
 .no-majority {
-    background-color: var(--kf-blue);
+    background: linear-gradient(90deg, var(--kf-pink), var(--kf-purple));
     color: white;
 }
 
@@ -285,13 +273,13 @@ header h1 {
 
 .progress-bar {
     height: 100%;
-    background-color: var(--kf-pink);
-    transition: width 0.3s ease;
+    background: linear-gradient(90deg, var(--kf-pink), var(--kf-purple));
+    transition: width 0.3s ease, background 0.3s ease;
     border-radius: 18px;
 }
 
 .progress-bar.majority {
-    background: linear-gradient(45deg, var(--kf-pink), var(--kf-purple));
+    background: linear-gradient(90deg, var(--kf-purple), var(--kf-green));
 }
 
 .progress-labels {
